@@ -11,6 +11,7 @@ intents:
 - thank
 - help
 - problem_email
+- send_feedback
 - open_incident:
     use_entities: []
 - incident_status
@@ -42,6 +43,22 @@ slots:
       conditions:
       - active_loop: open_incident_form
         requested_slot: confirm
+  confirm_feedback:
+    type: bool
+    influence_conversation: false
+    mappings:
+    - type: from_intent
+      intent: affirm
+      value: true
+      conditions:
+      - active_loop: feedback_form
+        requested_slot: confirm_feedback
+    - type: from_intent
+      intent: deny
+      value: false
+      conditions:
+      - active_loop: feedback_form
+        requested_slot: confirm_feedback
   previous_email:
     type: text
     influence_conversation: false
@@ -63,6 +80,8 @@ slots:
         requested_slot: email
       - active_loop: incident_status_form
         requested_slot: email
+      - active_loop: feedback_form
+        requested_slot: email
     - type: from_intent
       intent: affirm
       value: true
@@ -71,6 +90,8 @@ slots:
         requested_slot: email
       - active_loop: incident_status_form
         requested_slot: email
+      - active_loop: feedback_form
+        requested_slot: email
     - type: from_intent
       intent: deny
       value: false
@@ -78,6 +99,8 @@ slots:
       - active_loop: open_incident_form
         requested_slot: email
       - active_loop: incident_status_form
+        requested_slot: email
+      - active_loop: feedback_form
         requested_slot: email
     - type: from_entity
       entity: email
@@ -131,6 +154,20 @@ slots:
       conditions:
       - active_loop: open_incident_form
         requested_slot: problem_description
+  feedback_description:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        not_intent:
+          - incident_status
+          - bot_challenge
+          - help
+          - affirm
+          - deny
+        conditions:
+          - active_loop: feedback_form
+            requested_slot: feedback_description
   requested_slot:
     type: text
     influence_conversation: false
@@ -157,6 +194,8 @@ responses:
   - text: What should we use for the title of this incident?
   utter_ask_problem_description:
   - text: What is the problem description for the issue?
+  utter_ask_feedback_description:
+  - text: What is the feedback?
   utter_ask_priority:
   - text: What is the priority of this issue?
     buttons:
@@ -171,7 +210,7 @@ responses:
   utter_no_email:
   - text: Sorry, "{email}" isn't in our incident management system. Please try again.
   utter_help:
-  - text: "I can help you open a service request ticket, or check the status of your open incidents. \nYou can ask me things like: \n- Open an incident \n- Help me reset my password \n- I'm having a issue with my email \n- What's the status of the ticket I opened?"
+  - text: "I can help you open a service request ticket, or check the status of your open incidents. \nYou can ask me things like: \n- Open an incident \n- Help me reset my password \n- I'm having a issue with my email \n- What's the status of the ticket I opened? \n- I want to send a feedback"
   utter_welcome:
   - text: You're welcome!
   utter_default:
@@ -185,8 +224,17 @@ responses:
       payload: /affirm
     - title: No, cancel the incident
       payload: /deny
+  utter_ask_confirm_feedback:
+  - text: "Should I send a feedback with the following details? \n    email: {email} \n    feedback description: {feedback_description}"
+    buttons:
+    - title: Yes
+      payload: /affirm
+    - title: No, cancel
+      payload: /deny
   utter_incident_creation_canceled:
   - text: Alright, I have cancelled the incident.
+  utter_feedback_sending_canceled:
+  - text: Alright, I have cancelled the sending.
   utter_ask_whatelse:
   - text: What else can I help you with?
   utter_ask_handoff:
@@ -210,11 +258,19 @@ forms:
     ignored_intents: []
     required_slots:
     - email
+  feedback_form:
+    ignored_intents: []
+    required_slots:
+    - email
+    - feedback_description
+    - confirm_feedback
 actions:
 - action_ask_email
 - action_check_incident_status
 - action_handoff
 - action_handoff_options
 - action_open_incident
+- action_send_feedback
 - validate_open_incident_form
 - validate_incident_status_form
+- validate_feedback_form

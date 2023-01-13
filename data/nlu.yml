@@ -170,7 +170,7 @@ nlu:
     - How can I reconfigure my pass word
     - pass word reset?
     - forgot my pass word again what now
-    - password help fix 
+    - password help fix
     - show me how to set password again
     - can you tell me how to change my password
     - change pass word
@@ -486,3 +486,17 @@ nlu:
     - really important
     - escalated
     - escalate
+- intent: send_feedback
+  examples: |
+    - I need to send an feedback
+    - Can you get a feedback from me
+    - send feedback
+    - can you help me sending a feedback please
+    - I want to send a feedback
+    - send a feedback for aileen.mottern@example.com
+    - send a fedback
+    - send a feedbak
+    - i want to send a feedback
+    - i wanna send a feedback
+    - I want to send a feedback
+    - can I send a feedback

@@ -1,3 +1,4 @@
 pytablewriter
 requests
 ruamel.yaml
+pymongo
